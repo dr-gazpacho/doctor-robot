@@ -1,0 +1,3 @@
+/home/gonzalogazpacho/pico/doctor-robot/build/pioasm/CMakeFiles/rebuild_cache.dir
+/home/gonzalogazpacho/pico/doctor-robot/build/pioasm/CMakeFiles/edit_cache.dir
+/home/gonzalogazpacho/pico/doctor-robot/build/pioasm/CMakeFiles/pioasm.dir
