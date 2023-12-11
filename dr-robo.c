@@ -33,17 +33,12 @@ void pwm_set_duty(uint slice_num, uint chan, int d){
 
 void do_linear_brightness(bool enabled, uint slice_num, uint chan){
 	int d = 0;
-	for(int b = 0; b <= 10; b++) {
-		d = (b * b);
-		pwm_set_duty(slice_num, chan, d);
-		sleep_ms(5);
-	}
+
 	for(int c = 100; c >= 0; c--){
 		d = (c * c) / 100;
 		pwm_set_duty(slice_num, chan, d);
-		sleep_ms(5);
+		sleep_ms(3);
 	}
-	pwm_set_duty(slice_num, chan, 0);
 }
 
 int main() {
@@ -91,21 +86,22 @@ int main() {
 	int increase = 0;
 	int decrease = 0;
 	int reset = 0;
+	//
 	uint64_t time;
 	
 	pwm_set_duty(slice_num, chan22, count);
 	
 	while(1){
-		led = gpio_get(12);
-		increase = gpio_get(13);
-		decrease = gpio_get(14);
-		reset = gpio_get(15);
+		led = !gpio_get(12);
+		increase = !gpio_get(13);
+		decrease = !gpio_get(14);
+		reset = !gpio_get(15);
 		time = time_us_64() + 100;
 
 		switch (state) {
 			case 0:
 				//if increase pressed, increase duty/angle
-				if(!increase && decrease) {
+				if(increase && !decrease) {
 					state = 1;
 					if(count < 12){
 						count++;
@@ -116,7 +112,7 @@ int main() {
 					printf("hello world\n");
 				}
 				//if decrease pressed, reduce duty/angle
-				if(!decrease && increase)  {
+				if(decrease && !increase)  {
 					state = 1;
 					if(count > 2){
 						count--;
@@ -127,19 +123,20 @@ int main() {
 					printf("greetings world\n");
 				}
 				//if reset pressed, center
-				if(!reset && (increase && decrease)) {
+				if(reset && (!increase && !decrease)) {
 					state = 1;
 					count = 6;
 					pwm_set_duty(slice_num, chan22, count);
 					printf("I wanna kill myself world\n");
 				}
-				if(!led && increase && decrease) {
+				if(led && !increase && !decrease) {
 					do_linear_brightness(!led, led_slice_num, chan16);
+					state = 0;
 					printf("I wanna light the world\n");
 				}
 				break;
 			case 1:
-				if(increase && decrease) {
+				if(!increase && !decrease && !reset && !led) {
 					state = 0;
 				}
 				break;
