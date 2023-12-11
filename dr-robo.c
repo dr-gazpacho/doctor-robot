@@ -45,13 +45,23 @@ int main() {
 	
 	stdio_init_all();
 	gpio_set_function(16, GPIO_FUNC_PWM);
+	gpio_set_function(21, GPIO_FUNC_PWM);
 	gpio_set_function(22, GPIO_FUNC_PWM);
 	
+	//arms
+	uint arm_slice_num = pwm_gpio_to_slice_num(21);
+	uint chan21 = pwm_gpio_to_channel(21);
+	
+	//head
 	uint slice_num = pwm_gpio_to_slice_num(22);
 	uint chan22 = pwm_gpio_to_channel(22);
 	
+	//light
 	uint led_slice_num = pwm_gpio_to_slice_num(16);
 	uint chan16 = pwm_gpio_to_channel(16);
+	
+	pwm_set_freq_duty(arm_slice_num, chan21, 50, 0);
+	pwm_set_enabled(slice_num, true);
 	
 	pwm_set_freq_duty(slice_num, chan22, 50, 0);
 	pwm_set_enabled(slice_num, true);
@@ -64,17 +74,23 @@ int main() {
 	//button for LEDs
 	gpio_set_function(12, GPIO_FUNC_SIO);
 	//buttons for servos
+	gpio_set_function(10, GPIO_FUNC_SIO);
+	gpio_set_function(11, GPIO_FUNC_SIO);
 	gpio_set_function(13, GPIO_FUNC_SIO);
 	gpio_set_function(14, GPIO_FUNC_SIO);
 	gpio_set_function(15, GPIO_FUNC_SIO);
 	
 	//set the direction of the pins attached to the buttons as input
+	gpio_set_dir(10, false);
+	gpio_set_dir(11, false);
 	gpio_set_dir(12, false);
 	gpio_set_dir(13, false);
 	gpio_set_dir(14, false);
 	gpio_set_dir(15, false);
 	
 	//set up the button's pins to use internal pull-up
+	gpio_pull_up(10);
+	gpio_pull_up(11);
 	gpio_pull_up(12);
 	gpio_pull_up(13);
 	gpio_pull_up(14);
@@ -82,16 +98,23 @@ int main() {
 	
 	int state = 0;
 	int count = 2;
+	int armCount = 2;
+	int toggleArmHeadMode = 0;
+	int toggleSmoothMove = 0;
+	int armHeadToggleState = 0;
+	int smoothMoveToggleState = 0;
 	int led = 0;
 	int increase = 0;
 	int decrease = 0;
 	int reset = 0;
-	//
 	uint64_t time;
 	
+	pwm_set_duty(arm_slice_num, chan21, armCount);
 	pwm_set_duty(slice_num, chan22, count);
 	
 	while(1){
+		toggleSmoothMove = !gpio_get(10);
+		toggleArmHeadMode = !gpio_get(11);
 		led = !gpio_get(12);
 		increase = !gpio_get(13);
 		decrease = !gpio_get(14);
@@ -101,6 +124,14 @@ int main() {
 		switch (state) {
 			case 0:
 				//if increase pressed, increase duty/angle
+				if(toggleSmoothMove) {
+					state = 1;
+					smoothMoveToggleState = !smoothMoveToggleState;
+				}
+				if(toggleArmHeadMode) {
+					state = 1;
+					armHeadToggleState = !armHeadToggleState;
+				}
 				if(increase && !decrease) {
 					state = 1;
 					if(count < 12){
@@ -136,7 +167,8 @@ int main() {
 				}
 				break;
 			case 1:
-				if(!increase && !decrease && !reset && !led) {
+				if(!increase && !decrease && !reset && !led
+					&& !toggleSmoothMove && !toggleArmHeadMode) {
 					state = 0;
 				}
 				break;
