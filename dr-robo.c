@@ -49,7 +49,7 @@ int main() {
 	gpio_set_function(22, GPIO_FUNC_PWM);
 	
 	//arms
-	uint arm_slice_num = pwm_gpio_to_slice_num(21);
+	uint arm_slice = pwm_gpio_to_slice_num(21);
 	uint chan21 = pwm_gpio_to_channel(21);
 	
 	//head
@@ -60,8 +60,8 @@ int main() {
 	uint led_slice_num = pwm_gpio_to_slice_num(16);
 	uint chan16 = pwm_gpio_to_channel(16);
 	
-	pwm_set_freq_duty(arm_slice_num, chan21, 50, 0);
-	pwm_set_enabled(slice_num, true);
+	pwm_set_freq_duty(arm_slice, chan21, 50, 0);
+	pwm_set_enabled(arm_slice, true);
 	
 	pwm_set_freq_duty(slice_num, chan22, 50, 0);
 	pwm_set_enabled(slice_num, true);
@@ -109,7 +109,7 @@ int main() {
 	int reset = 0;
 	uint64_t time;
 	
-	pwm_set_duty(arm_slice_num, chan21, armCount);
+	pwm_set_duty(arm_slice, chan21, armCount);
 	pwm_set_duty(slice_num, chan22, count);
 	
 	while(1){
@@ -132,38 +132,80 @@ int main() {
 					state = 1;
 					armHeadToggleState = !armHeadToggleState;
 				}
-				if(increase && !decrease) {
+				//handle increase in all modes
+				if(increase) {
 					state = 1;
-					if(count < 12){
-						count++;
-					} else {
-						count = 12;
+					if(armHeadToggleState && !smoothMoveToggleState) {
+						if(armCount < 12){
+							armCount++;
+						} else {
+							armCount = 12;
+						}
+						pwm_set_duty(arm_slice, chan21, armCount);
 					}
-					pwm_set_duty(slice_num, chan22, count);
-					printf("hello world\n");
+					if(smoothMoveToggleState) {
+						if(armHeadToggleState) {
+							armCount = 12;
+							pwm_set_duty(arm_slice, chan21, armCount);
+						} else {
+							count = 12;
+							pwm_set_duty(slice_num, chan22, count);
+						}
+							
+					}
+					if(!armHeadToggleState && !smoothMoveToggleState) {
+						if(count < 12){
+							count++;
+						} else {
+							count = 12;
+						}
+						pwm_set_duty(slice_num, chan22, count);
+					}
 				}
-				//if decrease pressed, reduce duty/angle
-				if(decrease && !increase)  {
+				//handle decrease in all modes
+				if(decrease) {
 					state = 1;
-					if(count > 2){
-						count--;
-					} else {
-						count = 2;
+					if(armHeadToggleState && !smoothMoveToggleState) {
+						if(armCount > 2){
+							armCount--;
+						} else {
+							armCount = 2;
+						}
+						pwm_set_duty(arm_slice, chan21, armCount);
 					}
-					pwm_set_duty(slice_num, chan22, count);
-					printf("greetings world\n");
+					if(smoothMoveToggleState) {
+						if(armHeadToggleState) {
+							armCount = 2;
+							pwm_set_duty(arm_slice, chan21, armCount);
+						} else {
+							count = 2;
+							pwm_set_duty(slice_num, chan22, count);
+						}
+					}
+					if(!armHeadToggleState && !smoothMoveToggleState) {
+						if(count > 2){
+							count--;
+						} else {
+							count = 2;
+						}
+						pwm_set_duty(slice_num, chan22, count);
+					}
 				}
 				//if reset pressed, center
-				if(reset && (!increase && !decrease)) {
+				if(reset) {
 					state = 1;
 					count = 6;
-					pwm_set_duty(slice_num, chan22, count);
-					printf("I wanna kill myself world\n");
+					armCount = 6;
+					armHeadToggleState ? 
+						pwm_set_duty(arm_slice, chan21, armCount)
+						:
+						pwm_set_duty(slice_num, chan22, count);
+					armHeadToggleState = 0;
+					smoothMoveToggleState = 0;
 				}
 				if(led && !increase && !decrease) {
 					do_linear_brightness(!led, led_slice_num, chan16);
 					state = 0;
-					printf("I wanna light the world\n");
 				}
 				break;
 			case 1:
