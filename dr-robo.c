@@ -44,6 +44,11 @@ void do_linear_brightness(bool enabled, uint slice_num, uint chan){
 int main() {
 	
 	stdio_init_all();
+	gpio_init(4);
+	gpio_set_dir(4, GPIO_OUT);
+	gpio_init(5);
+	gpio_set_dir(5, GPIO_OUT);
+	
 	gpio_set_function(16, GPIO_FUNC_PWM);
 	gpio_set_function(21, GPIO_FUNC_PWM);
 	gpio_set_function(22, GPIO_FUNC_PWM);
@@ -111,6 +116,9 @@ int main() {
 	
 	pwm_set_duty(arm_slice, chan21, armCount);
 	pwm_set_duty(slice_num, chan22, count);
+	
+	gpio_put(4, 1);
+	gpio_put(5, 1);
 	
 	while(1){
 		toggleSmoothMove = !gpio_get(10);
