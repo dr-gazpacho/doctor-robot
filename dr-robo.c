@@ -173,6 +173,7 @@ int main() {
 				}
 				//handle decrease in all modes
 				if(decrease) {
+					printf("decrease");
 					state = 1;
 					if(armHeadToggleState && !smoothMoveToggleState) {
 						if(armCount > 2){
