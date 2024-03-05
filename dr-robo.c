@@ -49,7 +49,7 @@ int main() {
 	gpio_init(5);
 	gpio_set_dir(5, GPIO_OUT);
 	
-	gpio_set_function(16, GPIO_FUNC_PWM);
+	gpio_set_function(2, GPIO_FUNC_PWM);
 	gpio_set_function(21, GPIO_FUNC_PWM);
 	gpio_set_function(22, GPIO_FUNC_PWM);
 	
@@ -62,8 +62,8 @@ int main() {
 	uint chan22 = pwm_gpio_to_channel(22);
 	
 	//light
-	uint led_slice_num = pwm_gpio_to_slice_num(16);
-	uint chan16 = pwm_gpio_to_channel(16);
+	uint led_slice_num = pwm_gpio_to_slice_num(2);
+	uint chan2 = pwm_gpio_to_channel(2);
 	
 	pwm_set_freq_duty(arm_slice, chan21, 50, 0);
 	pwm_set_enabled(arm_slice, true);
@@ -71,7 +71,7 @@ int main() {
 	pwm_set_freq_duty(slice_num, chan22, 50, 0);
 	pwm_set_enabled(slice_num, true);
 	
-	pwm_set_freq_duty(led_slice_num, chan16, 2000, 0);
+	pwm_set_freq_duty(led_slice_num, chan2, 2000, 0);
 	pwm_set_enabled(led_slice_num, true);
 	
 	
@@ -212,7 +212,7 @@ int main() {
 					smoothMoveToggleState = 0;
 				}
 				if(led && !increase && !decrease) {
-					do_linear_brightness(!led, led_slice_num, chan16);
+					do_linear_brightness(!led, led_slice_num, chan2);
 					state = 0;
 				}
 				break;
