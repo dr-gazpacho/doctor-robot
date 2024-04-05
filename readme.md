@@ -7,7 +7,10 @@ I made a little animatronic because I wanted to believe that I could and now I d
 I programmed a Raspberry Pi Pico to control a few LEDs and servos. I made an extraordinarily rudimentary animatronic, I programmed it in C, and I almost lost my mind.
 Anything good about this bad boy I learned from [Harry Fairhead](https://iopress.info/index.php/author-s-pages/harry-fairhead). 
 
-I used the Rasberry Pi Pico quickstart guide and stuck to it like this abominable superglue I have still on my hands (more on that later). [Chapter 8](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf?_gl=1*thq7f3*_ga*OTc0Mjc3MTU0LjE3MDk0MDM0MjU.*_ga_22FD70LWDS*MTcxMjI4NzQ2Ny4xLjEuMTcxMjI4NzUzMy4wLjAuMA..) is the real juice here. If you want to take this code (and really take Harry's code) and expand on it or build it or do anything, you can basically stick to the guide of getting started with C. I did this all on a Raspberry Pi 400 because it was way easier to compile and develop and use the serial connection to help me debug my code. So, if you set your whole machine up do develop in C like the docs tell you, you can clone this repo and do all that `cmake -j4` jazz to compile `dr-robo` into a `uf2` and flash it into a Pico. Not a Pico W, just a regular one with no wifi.  
+I used the Rasberry Pi Pico quickstart guide and stuck to it like this abominable superglue I have still on my hands (more on that later). [Chapter 8](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf?_gl=1*thq7f3*_ga*OTc0Mjc3MTU0LjE3MDk0MDM0MjU.*_ga_22FD70LWDS*MTcxMjI4NzQ2Ny4xLjEuMTcxMjI4NzUzMy4wLjAuMA..) is the real juice here. If you want to take this code (and really take Harry's code) and expand on it or build it or do anything, you can basically stick to the guide of getting started with C. I did this all on a Raspberry Pi 400 because it was way easier to compile and develop and use the serial connection to help me debug my code. So, if you set your whole machine up do develop in C like the docs tell you, you can clone this repo and do all that `cmake -j4` jazz to compile `dr-robo` into a `uf2` and flash it into a Pico. Not a Pico W, just a regular one with no wifi.
+
+### Behold
+![an amazing robot](./amazing_robot.jpg)
 
 ### My little dude is named Unit 777-9311
 He is a robot from beyond the furthest moons of jupiter whose robotic society, in 1985, were transfixed by Purple Rain when Prince broadcast the concert from Syracuse.
@@ -26,6 +29,8 @@ rotary encoder in C. I could barely get the SDK installed and compile a program 
 - One of the buttons changes the type of motion the servo will take, either small incremental moves like the second hand on a clock or large swings to the minimum or maximum rotation
 - One button resets the position of both servos and returns control to the default servo
 - The last button controls the LED in the mouth, if you press the button the LED turns on, but with a sense of character you know? I used PWM to make the light ease in and out (thanks for that Harry)
+
+![an amazing diagram](./amazing_diagram.jpg)
 
 ## What went right
 
